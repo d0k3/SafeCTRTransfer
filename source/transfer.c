@@ -17,7 +17,7 @@
 #define REGION_STR          "JPN", "USA", "EUR", "AUS", "CHN", "KOR", "TWN"
 
 #define O3DS_CTRNAND_SIZE   0x2F5D0000
-#define NAND_MIN_SIZE       ((!IS_O3DS) ? 0x3AF00000 : 0x4D800000)
+#define NAND_MIN_SIZE       ((IS_O3DS) ? 0x3AF00000 : 0x4D800000)
 #define MIN_SD_FREE         (NAND_MIN_SIZE + FIRM_MAX_SIZE) // ~1GB
 #define CTRNAND_OFFSET      0x0B930000
 #define FIRM_NAND_OFFSET    0x0B130000
@@ -326,7 +326,7 @@ u32 SafeCtrTransfer(void) {
     do {
         if (!IS_O3DS) {
             const u8* inject_header = IS_DEVKIT ? NCSD_header_o3ds_dev_hdr : NCSD_header_o3ds_hdr;
-            if (WriteNandSectors(inject_header, 2, 1, 0xFF) != 0) {
+            if (WriteNandSectors(inject_header, 0, 1, 0xFF) != 0) {
                 snprintf(msgTransfer, 64, "header write failed!");
                 break;
             }
