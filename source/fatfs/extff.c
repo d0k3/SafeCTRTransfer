@@ -58,7 +58,7 @@ u32 f_copy_worker(char* fdest, char* forig) {
         
         if ((ret = f_open(&ofile, forig, FA_READ | FA_OPEN_EXISTING)) != FR_OK) 
             return ret;
-        if ((ret = f_open(&dfile, fdest, FA_WRITE | FA_CREATE_NEW)) != FR_OK) {
+        if ((ret = f_open(&dfile, fdest, FA_WRITE | FA_CREATE_ALWAYS)) != FR_OK) {
             f_close(&ofile);
             return ret;
         }
@@ -136,7 +136,7 @@ u32 f_copy_from_nand(const char* path, u32 size, u32 nand_offset, u32 nand_keysl
     FIL file;
     u32 ret = FR_OK;
     
-    if ((ret = f_open(&file, path, FA_WRITE | FA_CREATE_NEW)) != FR_OK)
+    if ((ret = f_open(&file, path, FA_WRITE | FA_CREATE_ALWAYS)) != FR_OK)
         return ret;
     f_lseek(&file, 0);
     f_sync(&file);
