@@ -43,6 +43,11 @@
 // SafeCtrTransfer version
 #define VERSION 	"0.0.1"
 
+// transfer handling flags, use with caution
+// #define ALLOW_A9LH  // allows to run this from A9LH, not recommended
+// #define SKIP_SHA    // skips the image .sha check, not recommended
+// #define NO_TRANSFER // disables all NAND writes, just for testing
+
 // input / output paths
 #define INPUT_PATH  "0:/ctrtransfer"
 

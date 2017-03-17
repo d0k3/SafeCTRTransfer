@@ -10,9 +10,6 @@
 #include "NCSD_header_o3ds_hdr.h"
 #include "NCSD_header_o3ds_dev_hdr.h"
 
-#define TEST_RUN
-#define FAST_TRANSFER // unsafe!!!
-
 #define COLOR_STATUS(s) ((s == STATUS_GREEN) ? COLOR_BRIGHTGREEN : (s == STATUS_YELLOW) ? COLOR_BRIGHTYELLOW : (s == STATUS_RED) ? COLOR_RED : COLOR_DARKGREY)
 #define REGION_STR          "JPN", "USA", "EUR", "AUS", "CHN", "KOR", "TWN"
 
@@ -116,7 +113,7 @@ u32 SafeCtrTransfer(void) {
     u8 secinfo[0x200];
     u8* region = (secinfo + 0x100);
     char* serial = (char*) (secinfo + 0x102);
-    #ifndef TEST_RUN
+    #ifndef ALLOW_A9LH
     if (IS_A9LH) {
         snprintf(msgSystem, 64, "A9LH detected");
         statusSystem = STATUS_RED;
@@ -167,7 +164,7 @@ u32 SafeCtrTransfer(void) {
     
     char input_sha_path[128] = { 0 };
     snprintf(input_sha_path, 128, "%s.sha", input_path);
-    #ifndef FAST_TRANSFER
+    #ifndef SKIP_SHA
     u8 input_sha[0x21];
     if ((f_qread(input_sha_path, input_sha, 0x0, 0x21, &bt) != FR_OK) || (bt != 0x21)) {
         snprintf(msgInput, 128, ".sha not found");
@@ -200,15 +197,15 @@ u32 SafeCtrTransfer(void) {
     
     
     // step #3 - SHA check for transferable image
-    #ifndef FAST_TRANSFER
-    snprintf(msgShaCheck, 64, "in progress");
+    #ifndef SKIP_SHA
+    snprintf(msgShaCheck, 64, "in progress...");
     statusShaCheck = STATUS_YELLOW;
     ShowTransferStatus();
     
     u8 hash[0x20];
     f_sha_get(input_path, hash);
     if (memcmp(hash, input_sha, 0x20) != 0) {
-        snprintf(msgShaCheck, 64, "failed");
+        snprintf(msgShaCheck, 64, ".sha check failed");
         statusShaCheck = STATUS_RED;
         return 1;
     }
@@ -217,7 +214,7 @@ u32 SafeCtrTransfer(void) {
     statusShaCheck = STATUS_GREEN;
     ShowTransferStatus();
     #else
-    snprintf(msgShaCheck, 64, "fast mode, skipped");
+    snprintf(msgShaCheck, 64, "skipped .sha check");
     statusShaCheck = STATUS_YELLOW;
     ShowTransferStatus();
     #endif
@@ -234,7 +231,7 @@ u32 SafeCtrTransfer(void) {
         return 1;
     }
     
-    snprintf(msgPrep, 64, ".db CMAC fix");
+    snprintf(msgPrep, 64, ".db CMAC fix...");
     ShowTransferStatus();
     if ((FixFileCmac("4:/dbs/ticket.db") != 0) ||
         (FixFileCmac("4:/dbs/certs.db") != 0) ||
@@ -247,7 +244,7 @@ u32 SafeCtrTransfer(void) {
     FixFileCmac("4:/dbs/tmp_t.db");
     FixFileCmac("4:/dbs/tmp_i.db");
     
-    snprintf(msgPrep, 64, "image cleanup");
+    snprintf(msgPrep, 64, "image cleanup...");
     ShowTransferStatus();
     f_delete("4:/private/movable.sed");
     f_delete("4:/rw/sys/LocalFriendCodeSeed_B");
@@ -257,7 +254,7 @@ u32 SafeCtrTransfer(void) {
     f_delete("4:/data");
     f_delete(input_sha_path);
     
-    snprintf(msgPrep, 64, "file transfers");
+    snprintf(msgPrep, 64, "file transfers...");
     ShowTransferStatus();
     if ((f_copy("4:/private/movable.sed", "1:/private/movable.sed") != FR_OK) ||
         ((f_copy("4:/rw/sys/LocalFriendCodeSeed_B", "1:/rw/sys/LocalFriendCodeSeed_B") != FR_OK) &&
@@ -270,7 +267,7 @@ u32 SafeCtrTransfer(void) {
         return 1;
     }
     
-    snprintf(msgPrep, 64, "loading firm");
+    snprintf(msgPrep, 64, "loading firm...");
     ShowTransferStatus();
     u32 firm_size = 0;
     if (GetFirm(FIRM_BUFFER, &firm_size, "4:", O3DS_NATIVE_FIRM_TIDLOW) != 0) {
@@ -287,27 +284,28 @@ u32 SafeCtrTransfer(void) {
     
     
     // step #5 - NAND backup
-    snprintf(msgBackup, 64, "in progress");
+    snprintf(msgBackup, 64, "in progress...");
     statusBackup = STATUS_YELLOW;
     ShowTransferStatus();
     
     char backup_path[64];
     snprintf(backup_path, 64, INPUT_PATH "/%s_nand.bin", serial);
     if (f_copy_from_nand(backup_path, NAND_MIN_SIZE, 0, 0xFF) != FR_OK) {
-        snprintf(msgBackup, 64, "in progress");
+        snprintf(msgBackup, 64, "nand backup failed");
         statusBackup = STATUS_RED;
         return 1;
     }
     
-    TruncateString(msgBackup, backup_path, 20, 4);
+    TruncateString(msgBackup, backup_path, 20, 8);
     statusBackup = STATUS_GREEN;
     ShowTransferStatus();
     // NAND backup done!
     
     
     // step #6 - actual CTRNAND transfer
+    #ifndef NO_TRANSFER
     ShowString("Transfering CTRNAND image,\ncross your fingers...");
-    snprintf(msgTransfer, 64, "in progress");
+    snprintf(msgTransfer, 64, "in progress...");
     statusTransfer = STATUS_YELLOW;
     ShowTransferStatus();
     
@@ -316,7 +314,7 @@ u32 SafeCtrTransfer(void) {
         (WriteNandSectors(nand_header, 2, 1, 0xFF) != 0) ||
         (NCSD_header_o3ds_hdr_size != 0x200) ||
         (NCSD_header_o3ds_dev_hdr_size != 0x200)) {
-        snprintf(msgTransfer, 64, "nand write failed");
+        snprintf(msgTransfer, 64, "transfer test failed");
         statusTransfer = STATUS_RED;
         return 1;
     }
@@ -347,6 +345,11 @@ u32 SafeCtrTransfer(void) {
         statusTransfer = STATUS_GREEN;
         return 0;
     }
+    #else
+    snprintf(msgTransfer, 64, "test mode, not done");
+    statusTransfer = STATUS_YELLOW;
+    return 0;
+    #endif
     
     // if we end up here: uhoh
     ShowTransferStatus();
