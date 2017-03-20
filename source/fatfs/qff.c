@@ -89,27 +89,27 @@ FRESULT fs_init(void) {
 }
 
 FRESULT fs_deinit(void) {
-    fs_mount(NULL);
+    fs_mount(NULL, 0);
     for (UINT i = 0; i < NUM_FS; i++) {
         TCHAR* fsname = "X:";
         *fsname = (TCHAR) ('0' + i);
         if (fs_mounted[i] != FR_OK) continue;
-        f_mount(0, fsname, 1);
+        f_mount(NULL, fsname, 1);
         fs_mounted[i] = FR_NOT_READY;
     }
     return FR_OK;
 }
 
-FRESULT fs_mount(const TCHAR* path) {
+FRESULT fs_mount(const TCHAR* path, BYTE readonly) {
     // deinit image filesystem
     char fsname[8];
     snprintf(fsname, 7, "%i:", PDRV_IMG);
     if (fs_mounted[PDRV_IMG] == FR_OK) {
-        f_mount(0, fsname, 1);
+        f_mount(NULL, fsname, 1);
         fs_mounted[PDRV_IMG] = FR_NOT_READY;
     }
     // (re)mount image, done if path == NULL
-    MountImage(path);
+    MountImage(path, readonly);
     // reinit image filesystem
     fs_mounted[PDRV_IMG] = f_mount(fs + PDRV_IMG, fsname, 1);
     return fs_mounted[PDRV_IMG];

@@ -110,9 +110,9 @@ u32 SafeCtrTransfer(void) {
     ShowTransferStatus();
     
     const char* regstr[] = { REGION_STR };
-    u8 secinfo[0x200];
-    u8* region = (secinfo + 0x100);
-    char* serial = (char*) (secinfo + 0x102);
+    u8 secinfo_sys[0x200];
+    u8* region = (secinfo_sys + 0x100);
+    char* serial = (char*) (secinfo_sys + 0x102);
     #ifndef ALLOW_A9LH
     if (IS_A9LH) {
         snprintf(msgSystem, 64, "A9LH detected");
@@ -120,8 +120,8 @@ u32 SafeCtrTransfer(void) {
         return 1;
     }
     #endif
-    if (((f_qread("1:/rw/sys/SecureInfo_A", secinfo, 0x0, 0x111, &bt) != FR_OK) &&
-         (f_qread("1:/rw/sys/SecureInfo_B", secinfo, 0x0, 0x111, &bt) != FR_OK)) ||
+    if (((f_qread("1:/rw/sys/SecureInfo_A", secinfo_sys, 0x0, 0x111, &bt) != FR_OK) &&
+         (f_qread("1:/rw/sys/SecureInfo_B", secinfo_sys, 0x0, 0x111, &bt) != FR_OK)) ||
         (bt != 0x111) || (*region > 6)) {
         snprintf(msgSystem, 64, "SecureInfo error");
         statusSystem = STATUS_RED;
@@ -161,21 +161,38 @@ u32 SafeCtrTransfer(void) {
         return 1;
     }
     
-    char input_sha_path[128] = { 0 };
-    snprintf(input_sha_path, 128, "%s.sha", input_path);
-    #ifndef SKIP_SHA
-    u8 input_sha[0x21];
-    if ((f_qread(input_sha_path, input_sha, 0x0, 0x21, &bt) != FR_OK) || (bt != 0x21)) {
-        snprintf(msgInput, 128, ".sha not found");
-        statusInput = STATUS_RED;
+    u8 secinfo_img[0x200];
+    u8* region_img = (secinfo_img + 0x100);
+    if (fs_mount(input_path, 1) != FR_OK) {
+        snprintf(msgPrep, 64, "image not mountable");
+        statusPrep = STATUS_RED;
         return 1;
     }
-    if ((input_sha[0x20] != *region) && (*region < 3)) {
+    if (((f_qread("4:/rw/sys/SecureInfo_A", secinfo_img, 0x0, 0x111, &bt) != FR_OK) &&
+         (f_qread("4:/rw/sys/SecureInfo_B", secinfo_img, 0x0, 0x111, &bt) != FR_OK)) ||
+        (bt != 0x111)) {
+        snprintf(msgSystem, 64, "image secinfo error");
+        statusSystem = STATUS_RED;
+        return 1;
+    }
+    if ((*region_img != *region) && (*region < 3)) {
         snprintf(msgInput, 64, "region mismatch");
         statusInput = STATUS_RED;
         return 1;
     }
+    fs_mount(NULL, 0);
+    
+    char input_sha_path[128] = { 0 };
+    snprintf(input_sha_path, 128, "%s.sha", input_path);
+    #ifndef SKIP_SHA
+    u8 input_sha[0x20];
+    if ((f_qread(input_sha_path, input_sha, 0x0, 0x20, &bt) != FR_OK) || (bt != 0x20)) {
+        snprintf(msgInput, 128, ".sha not found");
+        statusInput = STATUS_RED;
+        return 1;
+    }
     #endif
+    
     statusInput = STATUS_GREEN;
     ShowTransferStatus();
     // input file basic checks okay!
@@ -221,10 +238,10 @@ u32 SafeCtrTransfer(void) {
     
     
     // step #4 - adapt CTRNAND image
-    ShowString("Preparing CTRNAND image,\nplease wait...\n \n(this could take long)");
+    ShowString("Preparing CTRNAND image,\nplease wait...\n \n(this will take a while)");
     statusPrep = STATUS_YELLOW;
     
-    if (fs_mount(input_path) != FR_OK) {
+    if (fs_mount(input_path, 0) != FR_OK) {
         snprintf(msgPrep, 64, "mount failed");
         statusPrep = STATUS_RED;
         return 1;
@@ -275,7 +292,7 @@ u32 SafeCtrTransfer(void) {
         return 1;
     }
     
-    fs_mount(NULL);
+    fs_mount(NULL, 0);
     snprintf(msgPrep, 64, "image is prepared");
     statusPrep = STATUS_GREEN;
     ShowTransferStatus();

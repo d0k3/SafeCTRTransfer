@@ -55,14 +55,14 @@ const char* GetMountPath(void) {
     return mount_path;
 }
 
-u32 MountImage(const char* path) {
+u32 MountImage(const char* path, bool readonly) {
     if (mount_state) {
         f_close(&mount_file);
         mount_state = MOUNT_STATE_NONE;
         *mount_path = 0;
     }
     if (!path) return mount_state;
-    if ((f_open(&mount_file, path, FA_READ | FA_WRITE | FA_OPEN_EXISTING) != FR_OK) &&
+    if ((readonly || (f_open(&mount_file, path, FA_READ | FA_WRITE | FA_OPEN_EXISTING) != FR_OK)) &&
         (f_open(&mount_file, path, FA_READ | FA_OPEN_EXISTING) != FR_OK))
         return mount_state;
     f_lseek(&mount_file, 0);

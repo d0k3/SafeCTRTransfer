@@ -14,4 +14,4 @@ int SyncImage(void);
 u64 GetMountSize(void);
 u32 GetMountState(void);
 const char* GetMountPath(void);
-u32 MountImage(const char* path);
+u32 MountImage(const char* path, bool readonly);

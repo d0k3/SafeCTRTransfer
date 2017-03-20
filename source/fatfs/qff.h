@@ -13,4 +13,4 @@ FRESULT f_gettotalbyte (const TCHAR* path, QWORD* bt);
 // stuff for initializing / deinitializing drives
 FRESULT fs_init(void);
 FRESULT fs_deinit(void);
-FRESULT fs_mount(const TCHAR* path);
+FRESULT fs_mount(const TCHAR* path, BYTE readonly);
