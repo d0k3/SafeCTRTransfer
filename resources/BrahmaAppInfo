@@ -1,5 +1,5 @@
-APP_TITLE = GodMode9
-APP_DESCRIPTION = Open source 3DS all access file browser
+APP_TITLE = SafeCtrTransfer
+APP_DESCRIPTION = Safe, simple, user-friendly CTRNAND transfer tool
 APP_AUTHOR = d0k3
 
 PAYLOAD_MEM = 1
