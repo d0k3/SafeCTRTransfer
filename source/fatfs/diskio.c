@@ -17,11 +17,8 @@
 
 #define TYPE_NONE       0
 #define TYPE_SYSNAND    NAND_SYSNAND
-#define TYPE_EMUNAND    NAND_EMUNAND
-#define TYPE_IMGNAND    NAND_IMGNAND
 #define TYPE_SDCARD     (1UL<<4)
 #define TYPE_IMAGE      (1UL<<5)
-#define TYPE_RAMDRV     (1UL<<6)
 
 #define SUBTYPE_CTRN    0
 #define SUBTYPE_CTRN_N  1

@@ -123,8 +123,7 @@ u32 SafeCtrTransfer(void) {
     if (((f_qread("1:/rw/sys/SecureInfo_A", secinfo, 0x0, 0x111, &bt) != FR_OK) &&
          (f_qread("1:/rw/sys/SecureInfo_B", secinfo, 0x0, 0x111, &bt) != FR_OK)) ||
         (bt != 0x111) || (*region > 6)) {
-        ShowPrompt(false, "bt: %lu, r: %i", (u32) bt, (int) *region);
-        snprintf(msgSystem, 64, "SecInfo error");
+        snprintf(msgSystem, 64, "SecureInfo error");
         statusSystem = STATUS_RED;
         return 1;
     }
