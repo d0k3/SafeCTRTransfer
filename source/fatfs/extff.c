@@ -155,7 +155,7 @@ u32 f_copy_from_nand(const char* path, u32 size, u32 nand_offset, u32 nand_keysl
     ShowProgress(1, 1, path);
     f_close(&file);
     
-    return FR_OK;
+    return ret;
 }
 
 u32 f_copy_to_nand(const char* path, u32 nand_offset, u32 nand_keyslot) {
@@ -175,12 +175,12 @@ u32 f_copy_to_nand(const char* path, u32 nand_offset, u32 nand_keyslot) {
         if (read_bytes != bytes_read) ret = FR_NO_FILE;
         if (!ShowProgress(pos + (read_bytes / 2), fsize, path)) {
             ShowPrompt(false, "Cancel is not allowed here.");
-            ShowProgress(0, 0, path);
+            ShowProgress(pos + (read_bytes / 2), fsize, path);
         }
         if ((ret = WriteNandBytes(WORK_BUFFER, nand_offset + pos, bytes_read, nand_keyslot)) != 0) break;
     }
     ShowProgress(1, 1, path);
     f_close(&file);
     
-    return FR_OK;
+    return ret;
 }
