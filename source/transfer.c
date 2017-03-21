@@ -281,8 +281,10 @@ u32 SafeCtrTransfer(void) {
     f_delete("4:/private/movable.sed");
     f_delete("4:/rw/sys/LocalFriendCodeSeed_B");
     f_delete("4:/rw/sys/LocalFriendCodeSeed_A");
-    f_delete("4:/rw/sys/SecureInfo_A");
-    f_delete("4:/rw/sys/SecureInfo_B");
+    if (*region_img == *region) {
+        f_delete("4:/rw/sys/SecureInfo_A");
+        f_delete("4:/rw/sys/SecureInfo_B");
+    }
     f_delete("4:/data");
     f_delete(input_sha_path);
     
@@ -291,7 +293,8 @@ u32 SafeCtrTransfer(void) {
     if ((f_copy("4:/private/movable.sed", "1:/private/movable.sed") != FR_OK) ||
         ((f_copy("4:/rw/sys/LocalFriendCodeSeed_B", "1:/rw/sys/LocalFriendCodeSeed_B") != FR_OK) &&
          (f_copy("4:/rw/sys/LocalFriendCodeSeed_A", "1:/rw/sys/LocalFriendCodeSeed_A") != FR_OK)) ||
-        ((f_copy("4:/rw/sys/SecureInfo_A", "1:/rw/sys/SecureInfo_A") != FR_OK) &&
+        ((*region_img == *region) &&
+         (f_copy("4:/rw/sys/SecureInfo_A", "1:/rw/sys/SecureInfo_A") != FR_OK) &&
          (f_copy("4:/rw/sys/SecureInfo_B", "1:/rw/sys/SecureInfo_B") != FR_OK)) ||
         (f_copy("4:/data", "1:/data") != FR_OK)) {
         snprintf(msgPrep, 64, "file transfer failed");
