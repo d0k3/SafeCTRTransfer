@@ -7,6 +7,7 @@
 #include "extff.h"
 #include "ui.h"
 #include "hid.h"
+#include "sha.h"
 #include "NCSD_header_o3ds_hdr.h"
 #include "NCSD_header_o3ds_dev_hdr.h"
 
@@ -21,6 +22,9 @@
 #define FIRM_NAND_SIZE      0x800000
 #define FIRM0_NAND_OFFSET   FIRM_NAND_OFFSET
 #define FIRM1_NAND_OFFSET   (FIRM_NAND_OFFSET + (FIRM_NAND_SIZE/2))
+
+#define FIRM21_SHA256       0x87, 0xEF, 0x62, 0x94, 0xB9, 0x95, 0x52, 0x0F, 0xE5, 0x4C, 0x75, 0xCB, 0x6B, 0x17, 0xE0, 0x4A, \
+                            0x6C, 0x3D, 0xE3, 0x26, 0xDB, 0x08, 0xFC, 0x93, 0x39, 0x45, 0xC0, 0x06, 0x51, 0x45, 0x5A, 0x89
 
 #define STATUS_GREY    -1
 #define STATUS_GREEN    0
@@ -123,7 +127,7 @@ u32 SafeCtrTransfer(void) {
     if (((f_qread("1:/rw/sys/SecureInfo_A", secinfo_sys, 0x0, 0x111, &bt) != FR_OK) &&
          (f_qread("1:/rw/sys/SecureInfo_B", secinfo_sys, 0x0, 0x111, &bt) != FR_OK)) ||
         (bt != 0x111) || (*region > 6)) {
-        snprintf(msgSystem, 64, "SecureInfo error");
+        snprintf(msgSystem, 64, "secureinfo error");
         statusSystem = STATUS_RED;
         return 1;
     }
@@ -178,6 +182,18 @@ u32 SafeCtrTransfer(void) {
     if ((*region_img != *region) && (*region < 3)) {
         snprintf(msgInput, 64, "region mismatch");
         statusInput = STATUS_RED;
+        return 1;
+    }
+    const u8 firm_sha[] = { FIRM21_SHA256 };
+    u32 firm_size = 0;
+    if (GetFirm(FIRM_BUFFER, &firm_size, "4:", O3DS_NATIVE_FIRM_TIDLOW) != 0) {
+        snprintf(msgPrep, 64, "firm load failed");
+        statusPrep = STATUS_RED;
+        return 1;
+    }
+    if (sha_cmp(firm_sha, FIRM_BUFFER, firm_size, SHA256_MODE) != 0) {
+        snprintf(msgPrep, 64, "not a fw 2.1 image");
+        statusPrep = STATUS_RED;
         return 1;
     }
     fs_mount(NULL, 0);
@@ -279,15 +295,6 @@ u32 SafeCtrTransfer(void) {
          (f_copy("4:/rw/sys/SecureInfo_B", "1:/rw/sys/SecureInfo_B") != FR_OK)) ||
         (f_copy("4:/data", "1:/data") != FR_OK)) {
         snprintf(msgPrep, 64, "file transfer failed");
-        statusPrep = STATUS_RED;
-        return 1;
-    }
-    
-    snprintf(msgPrep, 64, "loading firm...");
-    ShowTransferStatus();
-    u32 firm_size = 0;
-    if (GetFirm(FIRM_BUFFER, &firm_size, "4:", O3DS_NATIVE_FIRM_TIDLOW) != 0) {
-        snprintf(msgPrep, 64, "firm load failed");
         statusPrep = STATUS_RED;
         return 1;
     }
