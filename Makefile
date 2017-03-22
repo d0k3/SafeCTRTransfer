@@ -18,9 +18,9 @@ include $(DEVKITARM)/ds_rules
 #---------------------------------------------------------------------------------
 export TARGET	:=	SafeCtrTransfer
 BUILD		:=	build
-SOURCES		:=	source source/common source/fs source/crypto source/fatfs source/nand source/game
+SOURCES		:=	source source/common source/fs source/crypto source/fatfs source/nand source/game source/quicklz
 DATA		:=	data
-INCLUDES	:=	source source/common source/font source/fs source/crypto source/fatfs source/nand source/game
+INCLUDES	:=	source source/common source/font source/fs source/crypto source/fatfs source/nand source/game source/quicklz
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -184,8 +184,11 @@ $(OUTPUT).elf	:	$(OFILES)
 #---------------------------------------------------------------------------------
 # you need a rule like this for each extension you use as binary data
 #---------------------------------------------------------------------------------
+%.qlz.o: %.qlz
+	@echo $(notdir $<)
+	@$(bin2o)
+
 %.hdr.o: %.hdr
-#---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)
 

@@ -8,8 +8,10 @@
 #include "ui.h"
 #include "hid.h"
 #include "sha.h"
+#include "qlzcomp.h"
 #include "NCSD_header_o3ds_hdr.h"
 #include "NCSD_header_o3ds_dev_hdr.h"
+#include "logo_qlz.h"
 
 #define COLOR_STATUS(s) ((s == STATUS_GREEN) ? COLOR_BRIGHTGREEN : (s == STATUS_YELLOW) ? COLOR_BRIGHTYELLOW : (s == STATUS_RED) ? COLOR_RED : COLOR_DARKGREY)
 #define REGION_STR          "JPN", "USA", "EUR", "AUS", "CHN", "KOR", "TWN"
@@ -82,7 +84,11 @@ u32 SafeCtrTransfer(void) {
     UINT bt;
     
     // initialization
-    ShowString("Initializing, please wait...");
+    // ShowString("Initializing, please wait...");
+    char* waitstr = "Please wait...";
+    QlzDecompress(TOP_SCREEN, logo_qlz, 0);
+    DrawStringF(TOP_SCREEN, SCREEN_WIDTH_TOP - 10 - GetDrawStringWidth(waitstr), SCREEN_HEIGHT - 10 - GetDrawStringHeight(waitstr),
+        COLOR_STD_FONT, COLOR_STD_BG, waitstr);
     
     
     // step #0 - init/check SD card
