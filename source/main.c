@@ -1,5 +1,6 @@
 #include "transfer.h"
 #include "ui.h"
+#include "hid.h"
 #include "qff.h"
 #include "i2c.h"
 
@@ -15,10 +16,13 @@ int main()
 {
     u32 ret = SafeCtrTransfer();
     ShowTransferStatus(); // update transfer status one last time
+    fs_deinit(); // deinitialize SD card
     if (ret) ShowPrompt(false, "CTR Transfer not finished!\nNo changes written to NAND.\n \nCheck lower screen for info.");
-    else ShowPrompt(false, "CTR Transfer success!");
+    else {
+        ShowString("CTR Transfer completed succesfully!\n \nEject your SD card now to reboot.");
+        while(InputWait() != SD_EJECT);
+    }
     ClearScreenF(true, true, COLOR_STD_BG);
-    fs_deinit();
     Reboot();
     return 0;
 }
