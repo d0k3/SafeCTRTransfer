@@ -14,7 +14,7 @@ void Reboot()
 
 int main()
 {
-    u32 ret = SafeCtrTransfer();
+    u32 ret = SafeCTRTransfer();
     ShowTransferStatus(); // update transfer status one last time
     fs_deinit(); // deinitialize SD card
     if (ret) ShowPrompt(false, "CTR Transfer not finished!\nNo changes written to NAND.\n \nCheck lower screen for info.");

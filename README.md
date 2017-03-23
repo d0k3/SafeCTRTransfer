@@ -1,10 +1,10 @@
-# SafeCtrTransfer
+# SafeCTRTransfer
 Safe, simple, user-friendly CTRNAND transfer tool
 
-SafeCtrTransfer allows you to do the CTRNAND transfer on a previously unhacked 3DS. For CTRNAND transfers on consoles that have arm9loaderhax installed, use [GodMode9](https://github.com/d0k3/GodMode9).
+SafeCTRTransfer allows you to do the CTRNAND transfer on a previously unhacked 3DS. For CTRNAND transfers on consoles that have arm9loaderhax installed, use [GodMode9](https://github.com/d0k3/GodMode9).
 
 ## Quick Instructions
-Put the two files listed below into the `sd:/ctrtransfer` folder, then run the SafeCtrTransfer payload (`SafeCtrTransfer.bin`) via the entrypoint of your choice (most likely [safehax](https://github.com/TiniVi/safehax)). Keep in mind that the CTRNAND image will be modified in the process.
+Put the two files listed below into the `sd:/ctrtransfer` folder, then run the SafeCTRTransfer payload (`SafeCTRTransfer.bin`) via the entrypoint of your choice (most likely [safehax](https://github.com/TiniVi/safehax)). Keep in mind that the CTRNAND image will be modified in the process.
 * **794,624,000 byte O3DS FW 2.1 CTRNAND image** (with MBR, called `ctrnand_full.bin` in [GodMode9](https://github.com/d0k3/GodMode9)) - this will be modified in the process
 * **32 byte SHA file** (filename: same as above with `.sha`appended) - SHA256 checksum, for bigger files anything above 32 byte will be ignored
 

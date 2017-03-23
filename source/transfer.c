@@ -57,7 +57,7 @@ u32 ShowTransferStatus(void) {
     const u32 pos_y0 = pos_yb + 50;
     const u32 stp = 14;
     
-    DrawStringF(BOT_SCREEN, pos_xb, pos_yb, COLOR_STD_FONT, COLOR_STD_BG, "SafeCtrTransfer v" VERSION "\n" "----------------------" "\n" "https://github.com/d0k3/SafeCtrTransfer");
+    DrawStringF(BOT_SCREEN, pos_xb, pos_yb, COLOR_STD_FONT, COLOR_STD_BG, "SafeCTRTransfer v" VERSION "\n" "----------------------" "\n" "https://github.com/d0k3/SafeCTRTransfer");
     
     DrawStringF(BOT_SCREEN, pos_x0, pos_y0 + (0*stp), COLOR_STD_FONT, COLOR_STD_BG, "MicroSD Card   -");
     DrawStringF(BOT_SCREEN, pos_x0, pos_y0 + (1*stp), COLOR_STD_FONT, COLOR_STD_BG, "System Status  -");
@@ -79,7 +79,7 @@ u32 ShowTransferStatus(void) {
     return 0;
 }
 
-u32 SafeCtrTransfer(void) {
+u32 SafeCTRTransfer(void) {
     FILINFO fno;
     UINT bt;
     
@@ -385,7 +385,7 @@ u32 SafeCtrTransfer(void) {
     
     // if we end up here: uhoh
     ShowTransferStatus();
-    ShowPrompt(false, "SafeCtrTransfer failed!\nThis really should not have happened :/.");
+    ShowPrompt(false, "SafeCTRTransfer failed!\nThis really should not have happened :/.");
     ShowPrompt(false, "You may launch an external payload\nto try and fix up your system.\n \nThis may be your LAST CHANCE!\nUse it wisely.");
     const char* optionstr[2] = { "Unmount SD card", "Run " INPUT_PATH "/payload.bin" };
     while (true) {

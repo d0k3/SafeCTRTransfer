@@ -40,7 +40,7 @@
 #define ENTRY_BRAHMA        (1)
 #define ENTRY_GATEWAY       (2)
 
-// SafeCtrTransfer version
+// SafeCTRTransfer version
 #define VERSION 	"0.0.4"
 
 // transfer handling flags, use with caution
