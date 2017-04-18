@@ -221,6 +221,7 @@ u32 SafeCTRTransfer(void) {
     
     
     // step #X - point of no return (crashes are still not critical for the system)
+    #ifndef NO_TRANSFER // we don't need this is in a test run
     if (!ShowUnlockSequence(1, "All basic checks passed!\n \nTo transfer CTRNAND, enter the sequence\nbelow or press B to cancel.")) {
         snprintf(msgShaCheck, 64, "cancelled by user");
         snprintf(msgPrep, 64, "cancelled by user");
@@ -232,6 +233,7 @@ u32 SafeCTRTransfer(void) {
         statusTransfer = STATUS_YELLOW;
         return 1;
     }
+    #endif
     
     
     // step #3 - SHA check for transferable image
