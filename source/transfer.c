@@ -321,12 +321,16 @@ u32 SafeCTRTransfer(void) {
     ShowTransferStatus();
     
     char backup_path[64];
+    char backup_sha_path[64] = { 0 };
+    u8 hash_bak[0x20];
     snprintf(backup_path, 64, INPUT_PATH "/%s_nand.bin", serial);
-    if (f_copy_from_nand(backup_path, NAND_MIN_SIZE, 0, 0xFF) != FR_OK) {
+    snprintf(backup_sha_path, 64, "%s.sha", backup_path);
+    if (f_copy_from_nand(backup_path, NAND_MIN_SIZE, 0, 0xFF, hash_bak) != FR_OK) {
         snprintf(msgBackup, 64, "nand backup failed");
         statusBackup = STATUS_RED;
         return 1;
     }
+    f_qwrite(backup_sha_path, hash_bak, 0, 0x20, NULL);
     
     TruncateString(msgBackup, backup_path, 20, 8);
     statusBackup = STATUS_GREEN;

@@ -132,7 +132,7 @@ u32 f_delete(const char* path) {
     return f_delete_worker(fpath);
 }
 
-u32 f_copy_from_nand(const char* path, u32 size, u32 nand_offset, u32 nand_keyslot) {
+u32 f_copy_from_nand(const char* path, u32 size, u32 nand_offset, u32 nand_keyslot, u8* sha) {
     FIL file;
     u32 ret = FR_OK;
     
@@ -140,11 +140,13 @@ u32 f_copy_from_nand(const char* path, u32 size, u32 nand_offset, u32 nand_keysl
         return ret;
     f_lseek(&file, 0);
     f_sync(&file);
+    if (sha) sha_init(SHA256_MODE);
     ShowProgress(0, 0, path);
     for (u64 pos = 0; (pos < size) && (ret == FR_OK); pos += WORK_BUFFER_SIZE) {
         UINT read_bytes = min(WORK_BUFFER_SIZE, (size - pos));
         UINT bytes_written = 0;
         if ((ret = ReadNandBytes(WORK_BUFFER, nand_offset + pos, read_bytes, nand_keyslot)) != 0) break;
+        if (sha) sha_update(WORK_BUFFER, read_bytes);
         if (!ShowProgress(pos + (read_bytes / 2), size, path)) {
             ret = FR_DENIED;
             break;
@@ -153,6 +155,7 @@ u32 f_copy_from_nand(const char* path, u32 size, u32 nand_offset, u32 nand_keysl
         if (read_bytes != bytes_written) ret = FR_NO_FILE;
     }
     ShowProgress(1, 1, path);
+    if (sha) sha_get(sha);
     f_close(&file);
     
     return ret;
