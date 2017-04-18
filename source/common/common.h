@@ -41,7 +41,7 @@
 #define ENTRY_GATEWAY       (2)
 
 // SafeCTRTransfer version
-#define VERSION 	"0.0.4"
+#define VERSION 	"0.0.5"
 
 // transfer handling flags, use with caution
 // #define ALLOW_A9LH  // allows to run this from A9LH, not recommended
