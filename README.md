@@ -16,6 +16,7 @@ For extended usage instructions, refer to [Plailect's guide](https://3ds.guide/)
 * **Al3x_10m** for being the first fearless person to test this
 * **Plailect** for providing the guide and making this accessible to the common user
 * **YoshiB** for providing the splash screen graphics
+* **Shadowhand** for being awesome and [hosting my nightlies](https://d0k3.secretalgorithm.com/)
 * Everyone involved in the development of **[Decrypt9](https://github.com/d0k3/Decrypt9WIP)** and **[GodMode9](https://github.com/d0k3/GodMode9)**
 * The fine folks on **freenode #Cakey**
 * All **[3dbrew.org](https://www.3dbrew.org/wiki/Main_Page) editors**
