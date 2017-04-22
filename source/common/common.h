@@ -47,6 +47,7 @@
 // #define ALLOW_A9LH  // allows to run this from A9LH, not recommended
 // #define SKIP_SHA    // skips the image .sha check, not recommended
 // #define NO_TRANSFER // disables all NAND writes, just for testing
+// #define FAIL_TEST   // to test the emergency screen, only works with NO_TRANSFER defined
 
 // input / output paths
 #define INPUT_PATH  "0:/ctrtransfer"

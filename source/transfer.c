@@ -383,7 +383,7 @@ u32 SafeCTRTransfer(void) {
         statusTransfer = STATUS_GREEN;
         return 0;
     }
-    #else
+    #elif !defined FAIL_TEST
     snprintf(msgTransfer, 64, "test mode, not done");
     statusTransfer = STATUS_YELLOW;
     return 0;
