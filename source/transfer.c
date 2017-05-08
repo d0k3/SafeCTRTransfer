@@ -174,15 +174,15 @@ u32 SafeCTRTransfer(void) {
     u8 secinfo_img[0x200];
     u8* region_img = (secinfo_img + 0x100);
     if (fs_mount(input_path, 1) != FR_OK) {
-        snprintf(msgPrep, 64, "image not mountable");
-        statusPrep = STATUS_RED;
+        snprintf(msgInput, 64, "image not mountable");
+        statusInput = STATUS_RED;
         return 1;
     }
     if (((f_qread("4:/rw/sys/SecureInfo_A", secinfo_img, 0x0, 0x111, &bt) != FR_OK) &&
          (f_qread("4:/rw/sys/SecureInfo_B", secinfo_img, 0x0, 0x111, &bt) != FR_OK)) ||
         (bt != 0x111)) {
-        snprintf(msgSystem, 64, "image secinfo error");
-        statusSystem = STATUS_RED;
+        snprintf(msgInput, 64, "image secinfo error");
+        statusInput = STATUS_RED;
         return 1;
     }
     if ((*region_img != *region) && (*region < 3)) {
@@ -193,13 +193,13 @@ u32 SafeCTRTransfer(void) {
     const u8 firm_sha[] = { FIRM21_SHA256 };
     u32 firm_size = 0;
     if (GetFirm(FIRM_BUFFER, &firm_size, "4:", O3DS_NATIVE_FIRM_TIDLOW) != 0) {
-        snprintf(msgPrep, 64, "firm load failed");
-        statusPrep = STATUS_RED;
+        snprintf(msgInput, 64, "firm load failed");
+        statusInput = STATUS_RED;
         return 1;
     }
     if (sha_cmp(firm_sha, FIRM_BUFFER, firm_size, SHA256_MODE) != 0) {
-        snprintf(msgPrep, 64, "not a fw 2.1 image");
-        statusPrep = STATUS_RED;
+        snprintf(msgInput, 64, "not a fw 2.1 image");
+        statusInput = STATUS_RED;
         return 1;
     }
     fs_mount(NULL, 0);
